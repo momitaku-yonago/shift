@@ -1,0 +1,130 @@
+<title>もみの匠 週間出勤</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap">
+<style>
+/* 縦1列のスマホ向け。店のストーリーズ画像と同じ、焦げ茶の地に白い明朝と金の差し色。ブランドの見た目に合わせて暗い色だけで作る */
+:root{
+  --bg:#1f130c; --panel:#2b1b11; --line:#4a3220; --fg:#f6eee2; --muted:#c9b59b;
+  --gold:#d9b46a; --yone1:#36c3e8; --yone2:#7ee0a6; --ryo1:#f3d36b; --ryo2:#ef8a74;
+  --f:#a956c9; --m:#2f7fe0; --pick:#3a2616;
+  --display:"Shippori Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN",serif;
+  --body:"Zen Kaku Gothic New","Hiragino Sans","Yu Gothic",sans-serif;
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6}
+.wrap{max-width:560px;overflow-x:clip;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+.hero{position:relative;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));aspect-ratio:942/430;max-width:none;
+  background:url("base.webp") center top/100% auto no-repeat}
+.hero::after{content:"";position:absolute;inset:auto 0 0;height:40%;background:linear-gradient(transparent,var(--bg))}
+.ttl{font-family:var(--display);font-weight:700;font-size:26px;text-align:center;letter-spacing:.12em;margin-top:-6px}
+.range{text-align:center;color:var(--gold);font-family:var(--display);font-size:17px;letter-spacing:.06em}
+.upd{text-align:center;color:var(--muted);font-size:12px;margin-top:2px}
+
+.filter{margin-top:22px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--panel)}
+.filter p{font-size:13px;color:var(--muted);margin-bottom:8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:14px;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:999px;padding:3px 12px 3px 6px;display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--gold);background:var(--pick);color:var(--gold)}
+.chip:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+.days{display:flex;flex-direction:column;gap:18px;margin-top:22px}
+.day{border-top:1px solid var(--line);padding-top:14px}
+.dh{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
+.dh b{font-family:var(--display);font-weight:700;font-size:28px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.dh span{font-family:var(--display);font-size:18px}
+.dh .sat{color:#8fc4ff}.dh .sun{color:#ff9a8a}
+.dh em{font-style:normal;font-size:12px;color:var(--bg);background:var(--gold);border-radius:4px;padding:1px 7px;margin-left:auto;align-self:center}
+.stores{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:540px){.stores{grid-template-columns:1fr}}
+.store{background:var(--panel);border-radius:10px;padding:10px 12px;min-width:0}
+.sn{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.08em;background-clip:text;-webkit-background-clip:text;color:transparent;margin-bottom:4px}
+.yone .sn{background-image:linear-gradient(90deg,var(--yone1),var(--yone2))}
+.ryo .sn{background-image:linear-gradient(90deg,var(--ryo1),var(--ryo2))}
+.ppl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px}
+.ppl li{display:grid;grid-template-columns:20px 1fr auto;align-items:center;gap:6px;padding:2px 4px;border-radius:6px}
+.ppl li.hit{background:var(--pick);outline:1px solid var(--gold)}
+.ppl li.dim{opacity:.35}
+.nm{font-size:15px;min-width:0;overflow-wrap:anywhere}
+.tm{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.none{color:var(--muted);font-size:13px;padding:2px 4px}
+.ic{width:18px;height:18px;display:block}
+
+.tel{margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.tel{grid-template-columns:1fr}}
+.tel div{background:var(--panel);border-radius:10px;padding:12px 14px;text-align:center}
+.tel .sn{margin:0}
+.tel .no{font-family:var(--display);font-size:22px;letter-spacing:.04em;font-variant-numeric:tabular-nums;user-select:all}
+.note{margin-top:18px;font-size:12.5px;color:var(--muted);text-align:center;text-wrap:balance}
+@media (prefers-reduced-motion:no-preference){.ppl li{transition:opacity .15s,background .15s}}
+</style>
+
+<div class="wrap">
+  <div class="hero" role="img" aria-label="もみの匠"></div>
+  <h1 class="ttl">週間出勤情報</h1>
+  <p class="range" id="range"></p>
+  <p class="upd" id="upd"></p>
+
+  <section class="filter" aria-label="スタッフで絞り込み">
+    <p>スタッフ名を押すと、その人の出勤日が光ります</p>
+    <div class="chips" id="chips"></div>
+  </section>
+
+  <div class="days" id="days"></div>
+
+  <div class="tel">
+    <div class="yone"><p class="sn">米原店</p><p class="no">0859-30-3723</p></div>
+    <div class="ryo"><p class="sn">両三柳店</p><p class="no">0859-36-8486</p></div>
+  </div>
+  <p class="note">※シフトは変更になる場合があります。ご予約・最新の出勤はお電話でご確認ください。</p>
+</div>
+
+<script>
+// 毎日15:00に、OplusとPeakManagerから「明日から7日分」でこのデータを作り直す
+const DATA = {"updated":"2026-11-13 20:01","male":["野口","石川","山口","けんた"],"days":[{"d":"2026-11-14","yone":[["だいこく","10:00","14:00"],["アリー","10:00","16:00"],["のり","13:00","22:00"],["野口","15:00","24:00"],["石川","17:00","24:00"]],"ryo":[["はな","10:00","17:00"],["ふじはら","12:00","18:30"],["けんた","16:00","24:00"],["けいこ","18:00","21:00"]]},{"d":"2026-11-15","yone":[["アリー","10:00","17:10"],["さき","11:00","15:00"],["ささき","13:00","15:10"],["のり","13:30","20:00"],["野口","15:00","24:00"],["山口","17:10","20:10"]],"ryo":[["ゆり","10:00","17:00"],["響子","11:00","18:00"],["ふじはら","12:00","18:30"],["石川","17:00","24:00"],["けいこ","18:00","21:00"]]},{"d":"2026-11-16","yone":[["だいこく","10:00","16:00"],["ゆかり","10:00","17:00"],["さき","11:00","16:00"],["のり","13:30","21:30"],["石川","17:00","24:00"]],"ryo":[["ゆり","11:00","17:00"],["さとみ","13:00","21:00"],["みどり","13:00","16:00"],["けんた","16:00","24:00"],["響子","17:30","21:30"]]},{"d":"2026-11-17","yone":[["だいこく","10:00","16:00"],["アリー","10:00","16:10"],["さき","11:00","15:00"],["野口","15:00","24:00"]],"ryo":[["はな","11:00","17:00"],["れい","11:00","15:00"],["さとみ","13:00","21:00"],["けいこ","16:00","20:00"]]},{"d":"2026-11-18","yone":[["アリー","10:00","16:10"],["みどり","13:00","16:00"],["のり","13:30","22:00"],["野口","15:00","24:00"],["石川","17:00","24:00"],["けいこ","17:00","21:00"]],"ryo":[["はな","10:00","17:00"],["さとみ","13:00","21:00"],["けんた","16:00","24:00"],["響子","17:30","21:30"]]},{"d":"2026-11-19","yone":[["アリー","10:00","14:00"],["のり","13:30","22:00"],["石川","17:00","24:00"]],"ryo":[["ゆり","10:00","18:00"],["さとみ","13:00","21:00"],["みどり","13:00","16:00"],["けんた","16:00","24:00"]]},{"d":"2026-11-20","yone":[["アリー","10:00","16:10"],["さき","11:00","13:00"],["のり","13:30","22:00"],["野口","15:00","24:00"],["石川","17:00","24:00"]],"ryo":[["はな","10:00","17:00"],["ゆり","12:00","18:00"],["さとみ","13:00","21:00"],["けんた","16:00","24:00"],["響子","17:30","22:00"],["ありさ","19:20","24:00"]]}]};
+
+const DOW = ["日","月","火","水","木","金","土"];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const isMale = n => DATA.male.includes(n);
+function icon(n){
+  const m = isMale(n), c = m ? "var(--m)" : "var(--f)";
+  const fig = m
+    ? '<circle cx="50" cy="22" r="10" fill="#fff"/><path d="M36 37h28a5 5 0 0 1 5 5v22a4 4 0 0 1-8 0V48h-2v38a5 5 0 0 1-10 0V66h-2v20a5 5 0 0 1-10 0V48h-2v16a4 4 0 0 1-8 0V42a5 5 0 0 1 5-5z" fill="#fff"/>'
+    : '<circle cx="50" cy="22" r="10" fill="#fff"/><path d="M40 37h20a5 5 0 0 1 4.8 3.6l7 22a4 4 0 0 1-7.6 2.4L59 50l7 19H58v18a4.5 4.5 0 0 1-9 0V69h-2v18a4.5 4.5 0 0 1-9 0V69h-8l7-19-5.2 15a4 4 0 0 1-7.6-2.4l7-22A5 5 0 0 1 40 37z" fill="#fff"/>';
+  return `<svg class="ic" viewBox="0 0 100 100" aria-label="${m ? "男性" : "女性"}"><rect x="3" y="3" width="94" height="94" rx="20" fill="${c}"/>${fig}</svg>`;
+}
+const md = s => { const [y,mo,d] = s.split("-").map(Number); return {mo, d, w: new Date(y, mo-1, d).getDay()}; };
+
+function storeHTML(cls, label, list){
+  const body = list.length
+    ? `<ul class="ppl">${list.map(([n,s,e]) => `<li data-n="${esc(n)}">${icon(n)}<span class="nm">${esc(n)}</span><span class="tm">${s}–${e}</span></li>`).join("")}</ul>`
+    : `<p class="none">出勤予定なし</p>`;
+  return `<div class="store ${cls}"><p class="sn">${label}</p>${body}</div>`;
+}
+
+const first = md(DATA.days[0].d), last = md(DATA.days[DATA.days.length-1].d);
+document.getElementById("range").textContent = `${first.mo}/${first.d}(${DOW[first.w]}) 〜 ${last.mo}/${last.d}(${DOW[last.w]})`;
+document.getElementById("upd").textContent = `${DATA.updated.replace(/^\d{4}-0?(\d+)-0?(\d+)/, "$1/$2")} 更新`;
+
+document.getElementById("days").innerHTML = DATA.days.map((x, i) => {
+  const t = md(x.d), wc = t.w === 6 ? "sat" : t.w === 0 ? "sun" : "";
+  return `<section class="day"><div class="dh"><b>${t.mo}/${t.d}</b><span class="${wc}">(${DOW[t.w]})</span>${i === 0 ? "<em>明日</em>" : ""}</div>
+    <div class="stores">${storeHTML("yone", "米原店", x.yone)}${storeHTML("ryo", "両三柳店", x.ryo)}</div></section>`;
+}).join("");
+
+// スタッフ一覧（この週に出る人だけ、最初に出てくる順）
+const names = [];
+DATA.days.forEach(x => [...x.yone, ...x.ryo].forEach(([n]) => { if (!names.includes(n)) names.push(n); }));
+const chips = document.getElementById("chips");
+chips.innerHTML = names.map(n => `<button type="button" class="chip" id="chip-${esc(n)}" aria-pressed="false" data-n="${esc(n)}">${icon(n)}${esc(n)}</button>`).join("");
+let picked = null;
+chips.addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  picked = picked === b.dataset.n ? null : b.dataset.n;
+  chips.querySelectorAll(".chip").forEach(c => c.setAttribute("aria-pressed", String(c.dataset.n === picked)));
+  document.querySelectorAll(".ppl li").forEach(li => {
+    li.classList.toggle("hit", picked !== null && li.dataset.n === picked);
+    li.classList.toggle("dim", picked !== null && li.dataset.n !== picked);
+  });
+});
+</script>
