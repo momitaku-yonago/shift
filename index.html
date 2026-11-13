@@ -106,13 +106,17 @@ function storeHTML(cls, label, list){
   return `<div class="store ${cls}"><p class="sn">${label}</p>${body}</div>`;
 }
 
+// 見ている人の今日の日付で「今日」「明日」を付ける
+const ymd = dt => dt.getFullYear() + "-" + String(dt.getMonth()+1).padStart(2,"0") + "-" + String(dt.getDate()).padStart(2,"0");
+const now = new Date(), tmr = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
+const tag = s => s === ymd(now) ? "<em>今日</em>" : s === ymd(tmr) ? "<em>明日</em>" : "";
 const first = md(DATA.days[0].d), last = md(DATA.days[DATA.days.length-1].d);
 document.getElementById("range").textContent = `${first.mo}/${first.d}(${DOW[first.w]}) 〜 ${last.mo}/${last.d}(${DOW[last.w]})`;
 document.getElementById("upd").textContent = `${DATA.updated.replace(/^\d{4}-0?(\d+)-0?(\d+)/, "$1/$2")} 更新`;
 
 document.getElementById("days").innerHTML = DATA.days.map((x, i) => {
   const t = md(x.d), wc = t.w === 6 ? "sat" : t.w === 0 ? "sun" : "";
-  return `<section class="day"><div class="dh"><b>${t.mo}/${t.d}</b><span class="${wc}">(${DOW[t.w]})</span>${i === 0 ? "<em>明日</em>" : ""}</div>
+  return `<section class="day"><div class="dh"><b>${t.mo}/${t.d}</b><span class="${wc}">(${DOW[t.w]})</span>${tag(x.d)}</div>
     <div class="stores">${storeHTML("yone", "米原店", x.yone)}${storeHTML("ryo", "両三柳店", x.ryo)}</div></section>`;
 }).join("");
 
