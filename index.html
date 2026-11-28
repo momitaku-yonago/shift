@@ -42,11 +42,11 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px
 .stores{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 /* スマホでも2店舗を横に並べ、名前と時刻も1行に並べる（2026-11-28 ユーザー指示） */
 @media (max-width:540px){
-  .stores{gap:6px}
-  .store{padding:9px 6px}
+  .stores{gap:5px}
+  .store{padding:9px 5px}
   .sn{font-size:15px;letter-spacing:.04em}
   .ppl{gap:4px}
-  .ppl li{grid-template-columns:15px 1fr auto;column-gap:4px;padding:3px 2px}
+  .ppl li{grid-template-columns:15px 1fr auto;column-gap:4px;padding:3px 1px}
   .ic{width:15px;height:15px}
   .nm{font-size:13.5px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:clip}
   .tm{font-size:11px;letter-spacing:-.03em}
@@ -136,6 +136,18 @@ document.getElementById("days").innerHTML = DATA.days.map((x, i) => {
   return `<section class="day"><div class="dh"><b>${t.mo}/${t.d}</b><span class="${wc}">(${DOW[t.w]})</span>${tag(x.d)}</div>
     <div class="stores">${storeHTML("yone", "米原店", x.yone)}${storeHTML("ryo", "両三柳店", x.ryo)}</div></section>`;
 }).join("");
+
+// 1行に入りきらない名前だけ、字を少しずつ小さくする（最小10px）。画面の向きが変わったらやり直す
+function fitNames(){
+  document.querySelectorAll(".nm").forEach(el => {
+    el.style.fontSize = "";
+    let fs = parseFloat(getComputedStyle(el).fontSize);
+    while (el.scrollWidth > el.clientWidth + 0.5 && fs > 10) { fs -= 0.5; el.style.fontSize = fs + "px"; }
+  });
+}
+fitNames();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNames);
+addEventListener("resize", fitNames);
 
 // スタッフ一覧（この週に出る人だけ、最初に出てくる順）
 const names = [];
